@@ -2,12 +2,6 @@ import os
 import modelscope
 import huggingface_hub
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
 url = "huggingface"
 
 model_name = "tofu_Llama-3.1-8B-Instruct_full"
