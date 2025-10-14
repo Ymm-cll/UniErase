@@ -20,12 +20,6 @@ if torch.cuda.is_available():
 perplexity_model = "None"
 perplexity_tokenizer = "None"
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
 
 def query_batch(evaluator, model, tokenizer, prompts, use_chat_template):
     if use_chat_template:
@@ -45,7 +39,7 @@ def query_batch(evaluator, model, tokenizer, prompts, use_chat_template):
 
 embedding_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', local_files_only=False)
 reject_list = []
-with open("/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/idontknow.txt", "r", encoding="utf-8") as f:
+with open("./closer-look-LLM-unlearning/data/idontknow.txt", "r", encoding="utf-8") as f:
     lines = f.readlines()
     for line in tqdm(lines):
         line = str(line.strip())
@@ -69,17 +63,17 @@ def equal_reject(model_answer):
 
 
 def calculate_perplexity(text):
-    # 1. Tokenize 文本并转换为模型输入
+    # 1. Tokenize
     global perplexity_model, perplexity_tokenizer
     inputs = perplexity_tokenizer(text, return_tensors="pt")
     input_ids = inputs["input_ids"].to(perplexity_model.device)
 
-    # 2. 计算模型的负对数似然（Negative Log-Likelihood）
+    # 2. Negative Log-Likelihood
     with torch.no_grad():
         outputs = perplexity_model(input_ids, labels=input_ids)
-        loss = outputs.loss  # 交叉熵损失（Cross-Entropy Loss）
+        loss = outputs.loss  # Cross-Entropy Loss
 
-    # 3. 计算困惑度（Perplexity = exp(loss)）
+    # 3. Perplexity = exp(loss)
     perplexity = torch.exp(loss / len(input_ids)).item()
 
     return perplexity
@@ -144,7 +138,7 @@ def analyze(evaluator, model, tokenizer):
 
 
 def run(device, ds_name, n_sample, use_chat_template, batch_size, model_path, output_path, only_run, load_path=None):
-    # 加载数据集
+
     evaluator = None
     if ds_name == "mmlu":
         ds = methods.load_jsonl("./dataset/mmlu/mmlu.jsonl")
@@ -159,10 +153,10 @@ def run(device, ds_name, n_sample, use_chat_template, batch_size, model_path, ou
         ds = methods.load_jsonl("./dataset/human_eval/human_eval.jsonl")
         evaluator = human_eval.HumanEvalEvaluator()
 
-    ds_list = list(ds)  # 转换为普通Python列表
+    ds_list = list(ds)
     if n_sample is not None:
         random.seed(SEED)
-        random.shuffle(ds_list)  # 打乱顺序
+        random.shuffle(ds_list)
         if type(n_sample) == float:
             n_sample = int(n_sample * len(ds_list))
         ds_list = ds_list[:n_sample]
@@ -180,7 +174,6 @@ def run(device, ds_name, n_sample, use_chat_template, batch_size, model_path, ou
     if load_path is not None:
         model.load_state_dict(torch.load(load_path))
 
-    # 运行评估（可以设置max_samples限制测试样本数量）
     evaluator.set_output_path(output_path)
     if not os.path.exists(evaluator.output_path):
         evaluate_model(evaluator, model, tokenizer, ds_list, use_chat_template, batch_size)
@@ -214,7 +207,7 @@ if __name__ == "__main__":
     use_chat_template = True
     batch_size = 64
 
-    base_output_path = "/data/ym/Unlearning_Token/eval_results"
+    base_output_path = "path/to/Unlearning_Token/eval_results"
     model_paths = []
     output_paths = []
     load_paths = []
@@ -223,12 +216,12 @@ if __name__ == "__main__":
 
     # model_paths.append("/data/models/tofu_Llama-3.1-8B-Instruct_full-UL_tofu")
     # load_paths.append(
-    #     "/data/ym/Unlearning_Token/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu.pth")
+    #     "./edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu.pth")
 
     for i in list(range(9)):
         num = (i+1)*400
-        model_paths.append("/data/models/tofu_Llama-3.1-8B-Instruct_full-UL_tofu")
-        load_paths.append(f"/data/ym/Unlearning_Token/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_{num}_seq_tofu_{num}.pth")
+        model_paths.append("path/to/tofu_Llama-3.1-8B-Instruct_full-UL_tofu")
+        load_paths.append(f"path/to/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_{num}_seq_tofu_{num}.pth")
         output_paths.append(f"{base_output_path}/edit/seq/{i}")
 
     # output_paths.append(f"{base_output_path}/edit/AlphaEdit_400_batched_tofu")
@@ -236,8 +229,8 @@ if __name__ == "__main__":
 
     # model_paths.append("/data/models/Llama-3.1-8B-Instruct-UL_real_world")
     # load_paths.append(
-    #     "/data/ym/Unlearning_Token/edited_model/Llama-3.1-8B-Instruct-UL_real_world/AlphaEdit_400_batched_real_world_multi.pth")
-    # output_paths.append("/data/ym/Unlearning_Token/eval_results/edit/AlphaEdit_400_batched_real_world_multi")
+    #     "./edited_model/Llama-3.1-8B-Instruct-UL_real_world/AlphaEdit_400_batched_real_world_multi.pth")
+    # output_paths.append("./eval_results/edit/AlphaEdit_400_batched_real_world_multi")
 
     print(len(model_paths))
 
