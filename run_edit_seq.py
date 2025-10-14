@@ -6,12 +6,6 @@ import torch
 from methods import methods
 from dataset import forget_expression
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
 model_path = "/data/models/tofu_Llama-3.1-8B-Instruct_full-UL_tofu_forget01_seq"
 # model_path = "/data/models/Llama-3.1-8B-Instruct-UL_real_world"
 tokenizer = AutoTokenizer.from_pretrained(model_path, padding_side="left")
@@ -41,8 +35,8 @@ settings = [
 ]
 
 tofu_forget_ds = methods.load_jsonl(
-    "/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/forget01_subject.jsonl")
-# tofu_forget_ds = methods.load_jsonl("/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/real_world/forget_subject.json")
+    "./closer-look-LLM-unlearning/data/tofu/forget01_subject.jsonl")
+# tofu_forget_ds = methods.load_jsonl("./closer-look-LLM-unlearning/data/real_world/forget_subject.json")
 tofu_forget_ds = tofu_forget_ds
 forget_target = forget_expression.forget_list
 print(tokenizer.eos_token)
@@ -101,7 +95,7 @@ for setting in tqdm(settings):
         "device": "0",
         "layers": layers,
         "mom2_n_samples": 100000,
-        "P_loc": f"/data/ym/Unlearning_Token/data/P_loc/Llama-3.1-8B-Instruct_multi.pt",
+        "P_loc": f"./data/P_loc/Llama-3.1-8B-Instruct_multi.pt",
         "load_path": load_path,
         "attn_implementation": 'flash_attention_2',
         "torch_dtype": "bfloat16",
