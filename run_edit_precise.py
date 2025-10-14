@@ -6,12 +6,6 @@ import torch
 from methods import methods
 from dataset import forget_expression
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
 
 def run(model_path, precise_id, forget_ds):
     tokenizer = AutoTokenizer.from_pretrained(model_path, padding_side="left")
@@ -69,7 +63,7 @@ def run(model_path, precise_id, forget_ds):
             "device": "0",
             "layers": layers,
             "mom2_n_samples": 100000,
-            "P_loc": f"/data/ym/Unlearning_Token/data/P_loc/Llama-3.1-8B-Instruct_multi.pt",
+            "P_loc": f"./data/P_loc/Llama-3.1-8B-Instruct_multi.pt",
             # "load_path": None,
             "attn_implementation": 'flash_attention_2',
             "torch_dtype": "bfloat16",
