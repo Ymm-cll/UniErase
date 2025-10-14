@@ -3,14 +3,8 @@ import subprocess
 import sys
 import methods.methods
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
-data_path = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget01/seq"
-base_p = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu"
+data_path = "./closer-look-LLM-unlearning/data/tofu/task_data/forget01/seq"
+base_p = "./closer-look-LLM-unlearning/data/tofu"
 for i in range(10):
     idx = (i+1)*40
     os.makedirs(data_path+f"/{i}", exist_ok=True)
@@ -24,7 +18,7 @@ for i in range(10):
 
 def main(seq_id):
     # Configuration
-    project_root = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning"
+    project_root = "path/to/closer-look-LLM-unlearning"
     # forget_losses = ["GA+GD", "GA+KL", "NPO+GD", "NPO+KL",
     #                  "ME+GD", "DPO+GD", "DPO+KL", "IDK+AP"]
     forget_losses = ["None"]
@@ -58,10 +52,8 @@ def main(seq_id):
     ]
 
     num = (seq_id+1)*400
-    load_model_path = f"/data/ym/Unlearning_Token/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu.pth"
-    data_path = f"/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget01/seq/{seq_id}"
-
-    # 获取当前 Python 解释器的路径
+    load_model_path = f"./edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu.pth"
+    data_path = f"./closer-look-LLM-unlearning/data/tofu/task_data/forget01/seq/{seq_id}"
     python_executable = sys.executable
 
     for model_path in model_paths:
@@ -96,9 +88,9 @@ def main(seq_id):
                         if "None" in forget_loss:
                             common_args.append(f"+custom_data_path={data_path}")
 
-                        # Run eval.py for each step (单卡版本)
+                        # Run eval.py for each step
                         for step in eval_steps:
-                            eval_cmd = [python_executable,  # 使用当前 Python 解释器
+                            eval_cmd = [python_executable,
                                         "eval.py",
                                         "--config-name=tofu.yaml",
                                         f"task_id={task_id}",
