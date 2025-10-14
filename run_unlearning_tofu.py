@@ -10,16 +10,16 @@ def find_available_port(start=10000, end=60000):
         port = random.randint(start, end)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            sock.bind(("0.0.0.0", port))  # 尝试绑定端口
+            sock.bind(("0.0.0.0", port))
             sock.close()
             return port
         except socket.error:
-            continue  # 端口被占用，继续尝试
+            continue
 
 
 def main():
     # Configuration
-    project_root = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning"
+    project_root = "path/to/closer-look-LLM-unlearning"
     forget_losses = ["GA+GD", "GA+KL", "NPO+GD", "NPO+KL",
                      "ME+GD", "DPO+GD", "DPO+KL", "IDK+AP"][:4]
     task_list = [1]
@@ -49,7 +49,6 @@ def main():
     print(MASTER_PORT)
     os.environ["MASTER_PORT"] = str(MASTER_PORT)
 
-    # 获取当前 Python 解释器的路径
     python_executable = sys.executable
 
     for model_path in model_paths:
@@ -77,10 +76,10 @@ def main():
                         f"model_path={model_path}",
                     ]
 
-                    # Run forget.py (单卡版本)
-                    forget_cmd = [python_executable,  # 如 `sys.executable` 或 `"python3"`
-                                  "-m",  # 使用 `-m` 来运行模块
-                                  "torch.distributed.run",  # `torchrun` 的实际模块名
+                    # Run forget.py
+                    forget_cmd = [python_executable,
+                                  "-m",
+                                  "torch.distributed.run",
                                   f"--nproc_per_node=1",
                                   f"--master_port={MASTER_PORT}",
                                   "forget.py",
