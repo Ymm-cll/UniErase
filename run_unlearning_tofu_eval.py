@@ -2,16 +2,10 @@ import os
 import subprocess
 import sys
 
-proxy = "http://10.31.100.51:7890"
-os.environ["proxy"] = proxy
-os.environ["http_proxy"] = proxy
-os.environ["https_proxy"] = proxy
-os.environ["ftp_proxy"] = proxy
-
 
 def main():
     # Configuration
-    project_root = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning"
+    project_root = "path/to/closer-look-LLM-unlearning"
     # forget_losses = ["GA+GD", "GA+KL", "NPO+GD", "NPO+KL",
     #                  "ME+GD", "DPO+GD", "DPO+KL", "IDK+AP"]
     forget_losses = ["None"]
@@ -44,10 +38,9 @@ def main():
         "/data/models/tofu_Llama-3.1-8B-Instruct_full-UL_tofu",
     ]
 
-    load_model_path = "/data/ym/Unlearning_Token/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu_multi.pth"
-    data_path = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget10"
+    load_model_path = "./edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_400_batched_tofu_multi.pth"
+    data_path = "./closer-look-LLM-unlearning/data/tofu/task_data/forget10"
 
-    # 获取当前 Python 解释器的路径
     python_executable = sys.executable
 
     for model_path in model_paths:
@@ -82,9 +75,9 @@ def main():
                         if "None" in forget_loss:
                             common_args.append(f"+custom_data_path={data_path}")
 
-                        # Run eval.py for each step (单卡版本)
+                        # Run eval.py for each step
                         for step in eval_steps:
-                            eval_cmd = [python_executable,  # 使用当前 Python 解释器
+                            eval_cmd = [python_executable,
                                         "eval.py",
                                         "--config-name=tofu.yaml",
                                         f"task_id={task_id}",
