@@ -8,7 +8,7 @@ proxy = "http://10.31.100.51:7
 
 def main():
     # Configuration
-    project_root = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning"
+    project_root = "path/to/closer-look-LLM-unlearning"
     # forget_losses = ["GA+GD", "GA+KL", "NPO+GD", "NPO+KL",
     #                  "ME+GD", "DPO+GD", "DPO+KL", "IDK+AP"]
     forget_losses = ["None"]
@@ -32,7 +32,7 @@ def main():
     ]
     model_family = "llama3.1-8b"
 
-    load_model_path = "/data/ym/Unlearning_Token/edited_model/Llama-3.1-8B-Instruct-UL_real_world/AlphaEdit_400_batched_real_world_multi.pth"
+    load_model_path = "./edited_model/Llama-3.1-8B-Instruct-UL_real_world/AlphaEdit_400_batched_real_world_multi.pth"
 
     # Convert task list to comma-separated string for environment variable
     os.environ["TASK_LIST"] = ",".join(map(str, task_list))
@@ -41,7 +41,6 @@ def main():
     # Define splits to process
     splits = ["forget"]
 
-    # 获取当前 Python 解释器的路径
     python_executable = sys.executable
 
     for model_path in model_paths:
@@ -73,9 +72,9 @@ def main():
                     if "UniErase" in eval_task_name:
                         common_args.append(f"+load_model_path={load_model_path}")
 
-                    # Run eval.py for each step (单卡版本)
+                    # Run eval.py for each step
                     for step in eval_steps:
-                        eval_cmd = [python_executable,  # 使用当前 Python 解释器
+                        eval_cmd = [python_executable,
                                     "real_world_eval.py",
                                     "--config-name=real_world.yaml",
                                     f"eval_unlearn_step={step}"
