@@ -39,9 +39,9 @@ class HumanEvalEvaluator(UtilityEvaluator):
                 exec(code, exec_globals)
                 exec_globals['check'](exec_globals[item['entry_point']])
             except AssertionError as e:
-                error_queue.put(str(e))  # 发送错误到队列
+                error_queue.put(str(e))
             except Exception as e:
-                error_queue.put(f"Unexpected error: {str(e)}")  # 捕获其他异常
+                error_queue.put(f"Unexpected error: {str(e)}")
             return None
 
         temp = os.environ.get("TOKENIZERS_PARALLELISM", "None")
@@ -62,7 +62,6 @@ class HumanEvalEvaluator(UtilityEvaluator):
             p.start()
             p.join(timeout=1)
 
-            # 检查是否有错误
             if not error_queue.empty():
                 return False
 
