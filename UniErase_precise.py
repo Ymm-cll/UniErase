@@ -12,7 +12,7 @@ for precise_id in range(1,2):
     batch_size = 1
     max_length = 128
 
-    tofu_forget_ds = methods.load_jsonl("/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/forget01_subject.jsonl")
+    tofu_forget_ds = methods.load_jsonl("./closer-look-LLM-unlearning/data/tofu/forget01_subject.jsonl")
     forget_ds = [tofu_forget_ds[precise_id]]
     print(forget_ds)
 
@@ -20,7 +20,7 @@ for precise_id in range(1,2):
     run_edit_precise.run(model_path, precise_id, forget_ds)
 
     # Configuration
-    project_root = "/data/ym/Unlearning_Token/closer-look-LLM-unlearning"
+    project_root = "path/to/closer-look-LLM-unlearning"
     # forget_losses = ["GA+GD", "GA+KL", "NPO+GD", "NPO+KL",
     #                  "ME+GD", "DPO+GD", "DPO+KL", "IDK+AP"]
     forget_losses = ["None"]
@@ -50,20 +50,19 @@ for precise_id in range(1,2):
     splits = ["forget01"]
 
     model_paths = [
-        "/data/ym/models/tofu_Llama-3.1-8B-Instruct_full",
+        "path/to/tofu_Llama-3.1-8B-Instruct_full",
     ]
 
-    load_model_path = "/data/ym/Unlearning_Token/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_precise_tofu_temp.pth"
-    data_path = f"/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget01/precise/{precise_id}"
+    load_model_path = "path/to/edited_model/tofu_Llama-3.1-8B-Instruct_full-UL_tofu/AlphaEdit_precise_tofu_temp.pth"
+    data_path = f"./closer-look-LLM-unlearning/data/tofu/task_data/forget01/precise/{precise_id}"
 
     os.makedirs(data_path, exist_ok=True)
     methods.save_jsonl(f"{data_path}/forget.json", forget_ds)
-    retain_ds_0 = methods.load_jsonl("/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget01/retain.json")
+    retain_ds_0 = methods.load_jsonl("./closer-look-LLM-unlearning/data/tofu/task_data/forget01/retain.json")
     methods.save_jsonl(f"{data_path}/retain.json", retain_ds_0)
-    forget_perturbed_0 = methods.load_jsonl(f"/data/ym/Unlearning_Token/closer-look-LLM-unlearning/data/tofu/task_data/forget01/forget_perturbed.json")
+    forget_perturbed_0 = methods.load_jsonl(f"./closer-look-LLM-unlearning/data/tofu/task_data/forget01/forget_perturbed.json")
     methods.save_jsonl(f"{data_path}/forget_perturbed.json", [retain_ds_0[precise_id]])
 
-    # 获取当前 Python 解释器的路径
     python_executable = sys.executable
 
     for split in splits:
@@ -101,9 +100,9 @@ for precise_id in range(1,2):
                         common_args.append(f"+precise_id={precise_id}")
                         common_args.append(f"gradient_accumulation_steps=1")
 
-                    # Run eval.py for each step (单卡版本)
+                    # Run eval.py for each step
                     for step in eval_steps:
-                        eval_cmd = [python_executable,  # 使用当前 Python 解释器
+                        eval_cmd = [python_executable,
                                     "eval.py",
                                     "--config-name=tofu.yaml",
                                     f"task_id={task_id}",
